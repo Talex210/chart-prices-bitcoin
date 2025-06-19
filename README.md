@@ -1,75 +1,21 @@
-# Nuxt Minimal Starter
+# Chart prices bitcoin
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Тестовое задание для позиции Full Stack Developer
 
-## Setup
+## Стек технологий
+- Nuxt 3
+- Vue 3
+- Node.js
+- PostgreSQL
+- Docker
 
-Make sure to install dependencies:
+## Установка
+1. Клонировать репозиторий: `git clone https://github.com/Talex210/chart-prices-bitcoin.git`
+2. Установить зависимости: `npm install`
+3. Запустить: `npm run dev`
 
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Функционал
+- [ ] График цен BTC
+- [ ] Выбор периода
+- [ ] Кастомный диапазон дат
+- [ ] Docker-контейнеризация
