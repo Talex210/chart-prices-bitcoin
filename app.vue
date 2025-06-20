@@ -6,19 +6,19 @@
             Loading...
         </div>
 
-        <pre v-else-if="data">
+        <pre v-if="data">
             {{ data }}
         </pre>
 
-        <div v-else-if="!apiKeyCoingecko" class="warning">
+        <div v-if="!data" class="warning">
             <p>API key not provided. Showing mock data.</p>
             <pre>{{ mockData }}</pre>
         </div>
 
         <div v-if="error">
-            Error: {{ error }}
+            <p>Error: {{ error.message }}</p>
+            <button @click="() => refresh">Refresh</button>
         </div>
-
     </div>
 <!--  <div>
     <NuxtRouteAnnouncer />
@@ -27,12 +27,10 @@
 </template>
 
 <script setup lang="ts">
-    const config = useRuntimeConfig()
-    const apiKeyCoingecko = config.public.coingeckoApiKey
-    const request = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&x_cg_demo_api_key=${apiKeyCoingecko}`
-    const { data, pending, error } = await useFetch(request)
+    const { data, pending, error, refresh } = await coinGeckoRequest()
 
     // подумать, какие мне данные не нужны, и удалить их из моковых
+    // то же вынести в отдельный компонент
     const mockData = [
         {
             "id": "bitcoin111111111111",
