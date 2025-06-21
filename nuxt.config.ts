@@ -5,7 +5,19 @@ export default defineNuxtConfig({
   modules: ['@nuxt/eslint', '@nuxt/icon', '@nuxt/ui'],
   runtimeConfig: {
     public: {
-      coingeckoApiKey: process.env.COINGECKO_API_KEY || ''
-    }
-  }
+      coinGeckoApiKey: process.env.COINGECKO_API_KEY || ''
+    },
+    // Добавляем переменные для БД (только на сервере)
+    dbUser: process.env.DB_USER,
+    dbPassword: process.env.DB_PASSWORD,
+    dbHost: process.env.DB_HOST,
+    dbPort: process.env.DB_PORT,
+    dbName: process.env.DB_NAME
+  },
+  nitro: {
+    plugins: [
+      '~/server/initDataBase.ts',
+      '~/server/cron/fetchPrices.ts'
+    ]
+  },
 })

@@ -19,6 +19,10 @@
             <p>Error: {{ error.message }}</p>
             <button @click="() => refresh">Refresh</button>
         </div>
+
+        <div>
+            <button @click="() => testSave">Test Save in Data Base</button>
+        </div>
     </div>
 <!--  <div>
     <NuxtRouteAnnouncer />
@@ -27,13 +31,30 @@
 </template>
 
 <script setup lang="ts">
+    import type { BitcoinPrice } from "~/server/types/bitcoin"
+
     const { data, pending, error, refresh } = await coinGeckoRequest()
+
+    // Для ручного тестирования
+    const testSave = async () => {
+        const testData: BitcoinPrice = {
+            timestamp: Date.now(),
+            price: 65000,
+            currency: 'usd',
+            coinId: 'bitcoin',
+        }
+
+        const { data } = await useFetch('/api/save-price', {
+            method: 'POST',
+            body: testData,
+        })
+    }
 
     // подумать, какие мне данные не нужны, и удалить их из моковых
     // то же вынести в отдельный компонент
     const mockData = [
         {
-            "id": "bitcoin111111111111",
+            "id": "bitcoin",
             "symbol": "btc",
             "name": "Bitcoin",
             "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400",
