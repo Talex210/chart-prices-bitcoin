@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.4.1",
+    "@types/pg": "^8.15.4",
     "eslint": "^9.29.0",
     "typescript": "^5.8.3"
   },

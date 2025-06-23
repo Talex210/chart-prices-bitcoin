@@ -36,6 +36,7 @@
     const { data, pending, error, refresh } = await coinGeckoRequest()
 
     // Для ручного тестирования
+    // TO DO - починить, не работает
     const testSave = async () => {
         const testData: BitcoinPrice = {
             timestamp: Date.now(),

@@ -1,4 +1,4 @@
-import CoinGeckoService from '~/server/services/coingecko'
+import { CoinGeckoService } from '~/server/services/coingecko'
 import { saveBitcoinPrice } from '~/server/database/dataBase'
 
 export default defineNitroPlugin(() => {
@@ -21,7 +21,7 @@ export default defineNitroPlugin(() => {
         } catch (error) {
             console.error('[CRON] Error updating price:', error)
         }
-    };
+    }
 
     // Выполнить сразу при запуске
     fetchAndSave()

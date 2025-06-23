@@ -1,7 +1,6 @@
 import type { CoinGeckoResponse, BitcoinPrice } from '~/server/types/bitcoin'
 
-// как убрать default?
-export default class CoinGeckoService {
+export  class CoinGeckoService {
     private readonly apiKey: string
     private readonly baseUrl = 'https://api.coingecko.com/api/v3'
 
