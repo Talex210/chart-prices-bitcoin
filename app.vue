@@ -21,7 +21,7 @@
         </div>
 
         <div>
-            <button @click="() => testSave">Test Save in Data Base</button>
+            <button @click="testSave">Test Save in Data Base</button>
         </div>
     </div>
 <!--  <div>
@@ -40,18 +40,19 @@
     const testSave = async () => {
         const testData: BitcoinPrice = {
             timestamp: Date.now(),
-            price: 65000,
+            price: 64001,
             currency: 'usd',
             coinId: 'bitcoin',
         }
 
-        const { data } = await useFetch('/api/save-price', {
+        await $fetch('/api/save-price', {
             method: 'POST',
             body: testData,
         })
     }
 
-    // подумать, какие мне данные не нужны, и удалить их из моковых
+    // скорей всего мне не нужны будут моковые данные, так как мы данные возьмём из БД
+    // подумать, какие мне данные не нужны, и удалить их из Моковых
     // то же вынести в отдельный компонент
     const mockData = [
         {
