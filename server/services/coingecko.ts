@@ -27,8 +27,8 @@ export  class CoinGeckoService {
         }
     }
 
-    // Получение исторических данных (пример)
-    // это скорей всего удалим
+    // Получение исторических данных
+    // нужно проверить работоспособность
     async getHistoricalPrices(days = 30): Promise<BitcoinPrice[]> {
         const url = `${this.baseUrl}/coins/bitcoin/market_chart?vs_currency=usd&days=${days}&x_cg_demo_api_key=${this.apiKey}`
         const response = await fetch(url)
