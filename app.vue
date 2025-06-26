@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main-content">
         <h1>
             Bitcoin Price Chart
         </h1>
@@ -15,14 +15,13 @@
             </button>
         </div>
 
-
         <div v-if="pending">
             Loading chart...
         </div>
 
-        <pre v-if="data && data.length > 0">
+        <div v-if="data && data.length > 0" class="chart-wrapper">
             <LineChart :data="data" />
-        </pre>
+        </div>
 
         <div v-if="data && data.length === 0" class="info">
             <p>
@@ -87,9 +86,6 @@
     // Запрос на прямую с онлайн сервера
     // const { data, pending, error, refresh } = await coinGeckoRequest()
 
-    // Запрашиваем данные из нашей базы данных
-    // const { data, pending, error, refresh } = await useFetch<BitcoinPrice[]>('/api/pricesFromBD')
-
     watch(data, (currentData) => {
         console.log(`Data for period ${selectedPeriod.value}:`, currentData)
     }, {
@@ -119,13 +115,23 @@
 </script>
 
 <style>
+.main-content {
+    width: 100%;
+    max-width: 95vw;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.chart-wrapper {
+    width: 100%;
+    margin: 2rem 0;
+    padding: 0;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: #000000;
     color: #ffffff;
-    display: flex;
-    justify-content: center;
-    padding: 2rem;
 }
 
 h1 {
