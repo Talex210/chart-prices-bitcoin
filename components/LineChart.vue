@@ -34,7 +34,7 @@ const drawChart = () => {
     const containerHeight = Math.min(containerWidth * 0.5625, window.innerHeight * 0.7)
 
     // Отступы
-    const margin = { top: 20, right: 30, bottom: 40, left: 70 }
+    const margin = { top: 20, right: 10, bottom: 65, left: 70 }
     const width = containerWidth - margin.left - margin.right
     const height = containerHeight - margin.top - margin.bottom
 
@@ -78,7 +78,7 @@ const drawChart = () => {
         .attr('transform', 'rotate(-45)')
 
     svg.append('g')
-        .call(d3.axisLeft(y).tickFormat(d => `$${d3.format('.2f')(d)}`))
+        .call(d3.axisLeft(y).tickFormat(d => `$ ${d3.format(',.0f')(d)}`))
 
     // Сетка
     svg.append('g')
@@ -193,5 +193,10 @@ watch(() => props.data, () => {
     r: 5;
     stroke: white;
     stroke-width: 1;
+}
+
+:global(svg .tick text) {
+    font-size: 12px;
+    fill: #ccc;
 }
 </style>
