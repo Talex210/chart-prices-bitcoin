@@ -61,6 +61,39 @@ export async function saveBitcoinPrice(data: BitcoinPrice) {
     }
 }
 
+// Массовое сохранение цен
+export async function saveBitcoinPricesBulk(data: BitcoinPrice[]) {
+    if (data.length === 0) {
+        return false
+    }
+    try {
+        const database = getPool()
+        // Преобразуем массив объектов в отдельные массивы для каждого столбца
+        const timestamps = data.map(d => d.timestamp)
+        const prices = data.map(d => d.price)
+        const currencies = data.map(d => d.currency)
+        const coinIds = data.map(d => d.coinId)
+
+        // Используем UNNEST для передачи массивов в качестве строк для вставки
+        const query = `
+            INSERT INTO bitcoin_prices (timestamp, price, currency, coin_id)
+            SELECT * FROM UNNEST(
+                $1::BIGINT[],
+                $2::DECIMAL[],
+                $3::VARCHAR[],
+                $4::VARCHAR[]
+            )
+            ON CONFLICT (timestamp, coin_id) DO UPDATE
+            SET price = EXCLUDED.price
+        `
+        const result = await database.query(query, [timestamps, prices, currencies, coinIds])
+        return (result.rowCount ?? 0) > 0
+    } catch (error) {
+        console.error('Error bulk saving bitcoin prices:', error)
+        throw error
+    }
+}
+
 // Получение цен за период
 export async function getBitcoinPrices(startTime: number, endTime: number) {
     try {

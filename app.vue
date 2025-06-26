@@ -34,12 +34,6 @@
                 No data found for selected period
             </p>
         </div>
-
-        <div>
-            <button @click="testSave">
-                Test Save in Data Base
-            </button>
-        </div>
     </div>
 </template>
 
@@ -97,26 +91,6 @@
         immediate: true,
         deep: true,
     })
-
-    // Для ручного тестирования
-    const testSave = async () => {
-        const testData: BitcoinPrice = {
-            // Генерируем случайное время в пределах последних 24 часов
-            timestamp: Date.now() - Math.floor(Math.random() * 24 * 60 * 60 * 1000),
-            // Генерируем случайную цену для наглядности
-            price: 107000 + (Math.random() - 0.5) * 2000,
-            currency: 'usd',
-            coinId: 'bitcoin',
-        }
-
-        await $fetch('/api/save-price', {
-            method: 'POST',
-            body: testData,
-        })
-
-        // После сохранения новых данных, обновляем список
-        await refresh()
-    }
 </script>
 
 <style>
@@ -187,15 +161,9 @@ button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    background-color: #ba18cc;
-    color: white;
     border: none;
     border-radius: 5px;
     transition: background-color 0.2s;
-}
-
-button:hover {
-    background-color: #9605a1;
 }
 
 .period-buttons {
@@ -214,5 +182,9 @@ button:hover {
     background-color: #eabe0b;
     color: #000;
     font-weight: bold;
+}
+
+button:hover {
+    background-color: rgba(234, 190, 11, 0.5);
 }
 </style>

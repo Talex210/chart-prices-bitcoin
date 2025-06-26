@@ -34,7 +34,7 @@ const drawChart = () => {
     const containerHeight = Math.min(containerWidth * 0.5625, window.innerHeight * 0.7)
 
     // Отступы
-    const margin = { top: 20, right: 10, bottom: 65, left: 70 }
+    const margin = { top: 20, right: 10, bottom: 70, left: 70 }
     const width = containerWidth - margin.left - margin.right
     const height = containerHeight - margin.top - margin.bottom
 
