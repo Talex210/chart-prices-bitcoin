@@ -1,6 +1,6 @@
 <template>
     <div ref="chartContainer" class="chart-container">
-        <svg ref="svgRef"></svg>
+        <svg ref="svgRef"/>
     </div>
 </template>
 
@@ -83,8 +83,8 @@ const drawChart = () => {
         .attr('x1', '0%').attr('y1', '0%')
         .attr('x2', '0%').attr('y2', '100%');
 
-    linearGradient.append('stop').attr('offset', '0%').attr('stop-color', 'rgb(150,5,161)');
-    linearGradient.append('stop').attr('offset', '100%').attr('stop-color', 'rgb(241,147,7)');
+    linearGradient.append('stop').attr('offset', '0%').attr('stop-color', 'rgb(241,147,7)');
+    linearGradient.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(241,147,7,0.35)');
 
     // Область
     const area = d3.area<{ timestamp: Date, price: number }>()
@@ -106,7 +106,7 @@ const drawChart = () => {
     svg.append('path')
         .datum(parsedData)
         .attr('fill', 'none')
-        .attr('stroke', '#eabe0b')
+        .attr('stroke', '#F19307FF')
         .attr('stroke-width', 2)
         .attr('d', line)
 }

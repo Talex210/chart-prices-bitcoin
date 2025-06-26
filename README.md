@@ -8,6 +8,7 @@
 - Node.js
 - PostgreSQL
 - Docker
+- D3.js
 
 ## Установка
 1. Клонировать репозиторий: `git clone https://github.com/Talex210/chart-prices-bitcoin.git`

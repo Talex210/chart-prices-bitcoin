@@ -1,8 +1,20 @@
 <template>
     <div>
         <h1>
-            Bitcoin Price Chart (Last 24 Hours)
+            Bitcoin Price Chart
         </h1>
+
+        <div class="period-buttons">
+            <button
+                v-for="p in periodButtons"
+                :key="p.period"
+                :class="{ active: selectedPeriod === p.period }"
+                @click="setPeriod(p.period)"
+            >
+                {{ p.label }}
+            </button>
+        </div>
+
 
         <div v-if="pending">
             Loading chart...
@@ -37,17 +49,49 @@
 </template>
 
 <script setup lang="ts">
+    import { ref, computed, watch } from "vue"
     import type { BitcoinPrice } from "~/server/types/bitcoin"
     import LineChart from "~/components/LineChart.vue"
+
+    type Period = 'day' | 'week' | 'month' | 'year'
+    interface PeriodButton {
+        label: string
+        period: Period
+    }
+
+    // Кнопки для выбора периода
+    const periodButtons: PeriodButton[] = [
+        { label: 'Day', period: 'day' },
+        { label: 'Week', period: 'week' },
+        { label: 'Month', period: 'month' },
+        { label: 'Year', period: 'year' },
+    ]
+
+    // Реактивная переменная для хранения выбранного периода
+    const selectedPeriod = ref<Period>('day')
+
+    // Функция для установки нового периода
+    function setPeriod(period: Period) {
+        selectedPeriod.value = period
+    }
+
+    // Динамический URL для useFetch, который будет меняться при изменении selectedPeriod
+    const apiUrl = computed(() => `/api/pricesFromBD?period=${selectedPeriod.value}`)
+
+    // Запрашиваем данные из нашей базы данных с использованием динамического URL
+    // useFetch автоматически сделает новый запрос при изменении apiUrl
+    const { data, pending, error, refresh } = useFetch<BitcoinPrice[]>(apiUrl, {
+        watch: [apiUrl] // Явно указываем следить за изменениями apiUrl
+    })
 
     // Запрос на прямую с онлайн сервера
     // const { data, pending, error, refresh } = await coinGeckoRequest()
 
     // Запрашиваем данные из нашей базы данных
-    const { data, pending, error, refresh } = await useFetch<BitcoinPrice[]>('/api/pricesFromBD')
+    // const { data, pending, error, refresh } = await useFetch<BitcoinPrice[]>('/api/pricesFromBD')
 
     watch(data, (currentData) => {
-        console.log('Data from BD:', currentData)
+        console.log(`Data for period ${selectedPeriod.value}:`, currentData)
     }, {
         immediate: true,
         deep: true,
@@ -97,7 +141,7 @@ h1 {
 
 button {
     display: block;
-    margin: 2rem auto;
+    margin: 1rem auto;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -110,5 +154,23 @@ button {
 
 button:hover {
     background-color: #9605a1;
+}
+
+.period-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.period-buttons button {
+    margin: 0;
+    background-color: #333;
+}
+
+.period-buttons button.active {
+    background-color: #eabe0b;
+    color: #000;
+    font-weight: bold;
 }
 </style>
