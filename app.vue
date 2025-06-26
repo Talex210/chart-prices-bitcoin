@@ -15,28 +15,24 @@
             </button>
         </div>
 
-        <div v-if="pending">
+        <div v-if="pending && !displayData.length" class="loading-container">
             Loading chart...
         </div>
 
-        <div v-if="data && data.length > 0" class="chart-wrapper">
-            <LineChart :data="data" />
+        <div v-else-if="displayData.length > 0" class="chart-wrapper">
+            <LineChart :data="displayData" />
+
+            <div v-if="pending" class="chart-overlay">
+                <div class="loading-indicator">
+                    Updating...
+                </div>
+            </div>
         </div>
 
-        <div v-if="data && data.length === 0" class="info">
+        <div v-else class="info">
             <p>
-                No data found in the database for the selected period.
+                No data found for selected period
             </p>
-        </div>
-
-        <div v-if="error">
-            <p>
-                Error: {{ error.message }}
-            </p>
-
-            <button @click="() => refresh">
-                Refresh
-            </button>
         </div>
 
         <div>
@@ -79,8 +75,17 @@
 
     // Запрашиваем данные из нашей базы данных с использованием динамического URL
     // useFetch автоматически сделает новый запрос при изменении apiUrl
-    const { data, pending, error, refresh } = useFetch<BitcoinPrice[]>(apiUrl, {
+    const { data, pending, refresh } = useFetch<BitcoinPrice[]>(apiUrl, {
         watch: [apiUrl] // Явно указываем следить за изменениями apiUrl
+    })
+
+    const displayData = ref<BitcoinPrice[]>([])
+
+    // Обновляем displayData только при успешном получении новых данных
+    watch(data, (newData) => {
+        if (newData && newData.length > 0) {
+            displayData.value = newData
+        }
     })
 
     // Запрос на прямую с онлайн сервера
@@ -123,9 +128,40 @@
 }
 
 .chart-wrapper {
+    position: relative;
     width: 100%;
     margin: 2rem 0;
-    padding: 0;
+    transition: opacity 0.3s ease;
+}
+
+.chart-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.loading-indicator {
+    background: #eabe0b;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.loading-container {
+    height: 500px; /* Фиксированная высота для сохранения пространства */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #eabe0b;
+    font-size: 1.2rem;
 }
 
 body {
