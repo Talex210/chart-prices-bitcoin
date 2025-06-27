@@ -27,19 +27,17 @@ export  class CoinGeckoService {
         }
     }
 
-    // Получение исторических данных
-    // нужно проверить работоспособность
-    // скорей всего пригодиться, для того чтобы вызывать любой период
-    async getHistoricalPrices(days = 30): Promise<BitcoinPrice[]> {
-        const url = `${this.baseUrl}/coins/bitcoin/market_chart?vs_currency=usd&days=${days}&x_cg_demo_api_key=${this.apiKey}`
-        const response = await fetch(url)
-        const data = await response.json()
+    async getHistoricalRange(
+        startTime: number,
+        endTime: number
+    ): Promise<{ prices: [number, number][] }> {
+        const url = `${this.baseUrl}/coins/bitcoin/market_chart/range?vs_currency=usd&from=${Math.floor(startTime/1000)}&to=${Math.floor(endTime/1000)}&x_cg_demo_api_key=${this.apiKey}`;
 
-        return data.prices.map(([timestamp, price]: [number, number]) => ({
-            timestamp,
-            price,
-            currency: 'usd',
-            coinId: 'bitcoin',
-        }))
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`CoinGecko API error: ${response.status}`);
+        }
+
+        return response.json();
     }
 }

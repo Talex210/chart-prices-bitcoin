@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const prices = await getBitcoinPrices(startTime, endTime)
+        const prices = await getBitcoinPrices(startTime, endTime, period as string)
 
         return prices
     }

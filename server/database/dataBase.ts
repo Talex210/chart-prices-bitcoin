@@ -94,17 +94,53 @@ export async function saveBitcoinPricesBulk(data: BitcoinPrice[]) {
     }
 }
 
-// Получение цен за период
-export async function getBitcoinPrices(startTime: number, endTime: number) {
+// Получение цен за период с адаптивной гранулярностью
+export async function getBitcoinPrices(startTime: number, endTime: number, period: string) {
     try {
         const database = getPool()
-        const result = await database.query(
-            `SELECT timestamp, price, currency, coin_id as "coinId"
-       FROM bitcoin_prices
-       WHERE timestamp BETWEEN $1 AND $2
-       ORDER BY timestamp ASC`,
-            [startTime, endTime]
-        )
+        let queryText
+        const queryParams = [startTime, endTime]
+
+        // В зависимости от периода, применяем разную гранулярность данных
+        switch (period) {
+            case 'year':
+            case 'month':
+                // Для больших периодов - 1 точка в день
+                queryText = `
+                    SELECT DISTINCT ON (date_trunc('day', to_timestamp(timestamp / 1000)))
+                           timestamp, price, currency, coin_id as "coinId"
+                    FROM bitcoin_prices
+                    WHERE timestamp BETWEEN $1 AND $2
+                    ORDER BY date_trunc('day', to_timestamp(timestamp / 1000))
+                `
+                break
+
+            case 'week':
+                // Для недели - 1 точка каждые 6 часов
+                queryText = `
+                    SELECT DISTINCT ON (floor(timestamp / (1000 * 60 * 60 * 6)))
+                           timestamp, price, currency, coin_id as "coinId"
+                    FROM bitcoin_prices
+                    WHERE timestamp BETWEEN $1 AND $2
+                    ORDER BY floor(timestamp / (1000 * 60 * 60 * 6))
+                `
+                break
+
+            case 'day':
+            default:
+                // Для дня - 1 точка в час
+                queryText = `
+                    SELECT DISTINCT ON (date_trunc('hour', to_timestamp(timestamp / 1000)))
+                           timestamp, price, currency, coin_id as "coinId"
+                    FROM bitcoin_prices
+                    WHERE timestamp BETWEEN $1 AND $2
+                    ORDER BY date_trunc('hour', to_timestamp(timestamp / 1000))
+                `
+                break
+        }
+
+        const result = await database.query(queryText, queryParams)
+
         return result.rows
     } catch (error) {
         console.error('Error fetching bitcoin prices:', error)
