@@ -15,12 +15,12 @@
             </button>
         </div>
 
-        <div v-if="pending && !displayData.length" class="loading-container">
+        <div v-if="pending && Array.isArray(data) && !data.length" class="loading-container">
             Loading chart...
         </div>
 
-        <div v-else-if="displayData.length > 0" class="chart-wrapper">
-            <LineChart :data="displayData" />
+        <div v-else-if="Array.isArray(data) && data.length" class="chart-wrapper">
+            <LineChart :data="data" />
 
             <div v-if="pending" class="chart-overlay">
                 <div class="loading-indicator">
@@ -71,15 +71,6 @@
     // useFetch автоматически сделает новый запрос при изменении apiUrl
     const { data, pending, refresh } = useFetch<BitcoinPrice[]>(apiUrl, {
         watch: [apiUrl] // Явно указываем следить за изменениями apiUrl
-    })
-
-    const displayData = ref<BitcoinPrice[]>([])
-
-    // Обновляем displayData только при успешном получении новых данных
-    watch(data, (newData) => {
-        if (newData && newData.length > 0) {
-            displayData.value = newData
-        }
     })
 
     // Запрос на прямую с онлайн сервера
