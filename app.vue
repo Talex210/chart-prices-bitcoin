@@ -15,6 +15,29 @@
             </button>
         </div>
 
+        <!-- Элементы для выбора дат -->
+        <div class="custom-period">
+            <div class="date-inputs">
+                <input
+                    v-model="startDate"
+                    type="datetime-local"
+                    :max="endDate"
+                >
+                <input
+                    v-model="endDate"
+                    type="datetime-local"
+                    :min="startDate"
+                >
+                <button
+                    :disabled="!startDate || !endDate"
+                    @click="applyCustomPeriod"
+                >
+                    Show selected period
+                </button>
+            </div>
+        </div>
+        <!-- Элементы для выбора дат -->
+
         <div v-if="pending && Array.isArray(data) && !data.length" class="loading-container">
             Loading chart...
         </div>
@@ -28,12 +51,6 @@
                 </div>
             </div>
         </div>
-
-        <div v-else class="info">
-            <p>
-                No data found for selected period
-            </p>
-        </div>
     </div>
 </template>
 
@@ -42,7 +59,7 @@
     import type { BitcoinPrice } from "~/server/types/bitcoin"
     import LineChart from "~/components/LineChart.vue"
 
-    type Period = 'day' | 'week' | 'month' | 'year'
+    type Period = 'day' | 'week' | 'month' | 'year' | 'custom'
     interface PeriodButton {
         label: string
         period: Period
@@ -56,25 +73,60 @@
         { label: 'Year', period: 'year' },
     ]
 
-    // Реактивная переменная для хранения выбранного периода
+    // Реактивные переменные
     const selectedPeriod = ref<Period>('day')
+    const startDate = ref<string>('')
+    const endDate = ref<string>('')
+
+    // Устанавливаем начальные даты (последние 24 часа по умолчанию)
+    const now = new Date()
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+    // Форматируем даты для input[type=datetime-local]
+    startDate.value = formatDateForInput(yesterday)
+    endDate.value = formatDateForInput(now)
+
+    // Функция для форматирования даты в формат, понятный input[type=datetime-local]
+    function formatDateForInput(date: Date): string {
+        return date.toISOString().slice(0, 16)
+    }
+
+    // Функция для преобразования строки даты в timestamp
+    function dateToTimestamp(dateString: string): number {
+        return new Date(dateString).getTime()
+    }
 
     // Функция для установки нового периода
     function setPeriod(period: Period) {
         selectedPeriod.value = period
+        // Сбрасываем кастомный период при выборе стандартного
+        if (period !== 'custom') {
+            startDate.value = ''
+            endDate.value = ''
+        }
     }
 
-    // Динамический URL для useFetch, который будет меняться при изменении selectedPeriod
-    const apiUrl = computed(() => `/api/pricesFromBD?period=${selectedPeriod.value}`)
+    // Функция для применения кастомного периода
+    function applyCustomPeriod() {
+        if (!startDate.value || !endDate.value) return
 
-    // Запрашиваем данные из нашей базы данных с использованием динамического URL
-    // useFetch автоматически сделает новый запрос при изменении apiUrl
-    const { data, pending, refresh } = useFetch<BitcoinPrice[]>(apiUrl, {
-        watch: [apiUrl] // Явно указываем следить за изменениями apiUrl
+        selectedPeriod.value = 'custom'
+    }
+
+    // Динамический URL для useFetch
+    const apiUrl = computed(() => {
+        if (selectedPeriod.value === 'custom') {
+            const start = dateToTimestamp(startDate.value)
+            const end = dateToTimestamp(endDate.value)
+            return `/api/pricesFromBD?startTime=${start}&endTime=${end}`
+        }
+        return `/api/pricesFromBD?period=${selectedPeriod.value}`
     })
 
-    // Запрос на прямую с онлайн сервера
-    // const { data, pending, error, refresh } = await coinGeckoRequest()
+    // Запрашиваем данные
+    const { data, pending, refresh } = useFetch<BitcoinPrice[]>(apiUrl, {
+        watch: [apiUrl]
+    })
 
     watch(data, (currentData) => {
         console.log(`Data for period ${selectedPeriod.value}:`, currentData)
@@ -140,12 +192,6 @@ h1 {
     color: #eabe0b;
 }
 
-.info {
-    text-align: center;
-    margin-top: 2rem;
-    color: #eabe0b;
-}
-
 button {
     display: block;
     margin: 1rem auto;
@@ -178,4 +224,43 @@ button {
 button:hover {
     background-color: rgba(234, 190, 11, 0.5);
 }
+
+/* Стили для кастомного периода */
+.custom-period {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.date-inputs {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.date-inputs input {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    background-color: #222;
+    color: white;
+    font-size: 14px;
+}
+
+.date-inputs button {
+    margin: 0;
+    padding: 8px 16px;
+    background-color: #eabe0b;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.date-inputs button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+/* Стили для кастомного периода */
 </style>

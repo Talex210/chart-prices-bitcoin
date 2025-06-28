@@ -3,8 +3,25 @@ import { getBitcoinPrices } from '~/server/database/dataBase'
 export default defineEventHandler(async (event) => {
     // Получаем параметры из запроса, если они есть
     const query = getQuery(event)
-    const period = query.period || 'day' // По умолчанию 'day'
 
+    // Если переданы startTime и endTime - используем их
+    if (query.startTime && query.endTime) {
+        try {
+            const startTime = Number(query.startTime)
+            const endTime = Number(query.endTime)
+
+            // Для кастомного периода используем более детальные данные
+            const prices = await getBitcoinPrices(startTime, endTime, 'day')
+
+            return prices
+        } catch (error) {
+            console.error('Error fetching custom period prices:', error)
+            setResponseStatus(event, 500)
+            return { error: 'Failed to fetch custom period price data' }
+        }
+    }
+
+    const period = query.period || 'day' // По умолчанию 'day'
     const endTime = Date.now()
     let startTime: number
 
