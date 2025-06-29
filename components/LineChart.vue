@@ -71,12 +71,14 @@ const initChart = () => {
     svg.append('g').attr('class', 'x-axis')
     svg.append('g').attr('class', 'y-axis')
 
-// 6. Только теперь создаём path-элементы
-    areaPath = svg.append('path')
-        .attr('fill', 'url(#area-gradient)')
+// 6. Создаем группу с clipPath — в ней будут и линия, и область
+    const graphGroup = svg.append('g')
         .attr('clip-path', 'url(#clip)')
 
-    linePath = svg.append('path')
+    areaPath = graphGroup.append('path')
+        .attr('fill', 'url(#area-gradient)')
+
+    linePath = graphGroup.append('path')
         .attr('fill', 'none')
         .attr('stroke', '#eabe0b')
         .attr('stroke-width', 2)
@@ -102,7 +104,7 @@ const updateChart = () => {
         .attr('height', height)
         .attr('y', 0)
         .transition()
-        .duration(1500)
+        .duration(2000)
         .attr('width', width)
 
     d3.select(svgRef.value).attr('width', containerWidth).attr('height', containerHeight)
@@ -128,7 +130,7 @@ const updateChart = () => {
         .nice()
 
     // --- Анимация осей и сетки ---
-    const transitionDuration = 1500 // Длительность анимации в мс
+    const transitionDuration = 2000 // Длительность анимации в мс
     const t = d3.transition().duration(transitionDuration)
 
     const xAxis = d3.axisBottom(x)
@@ -178,17 +180,7 @@ const updateChart = () => {
 
     linePath!
         .datum(parsedData)
-        .attr('d', line) // сначала обновляем путь
-
-    const totalLength = linePath!.node()!.getTotalLength()
-
-    linePath!
-        .attr('stroke-dasharray', `${totalLength} ${totalLength}`)
-        .attr('stroke-dashoffset', totalLength)
-        .transition()
-        .duration(transitionDuration)
-        .ease(d3.easeLinear)
-        .attr('stroke-dashoffset', 0)
+        .attr('d', line)
 
     // --- Паттерн Enter-Update-Exit для точек ---
     const dots = svg.selectAll('.dot')
