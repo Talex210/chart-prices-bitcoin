@@ -9,7 +9,7 @@ export default defineNitroPlugin(async () => {
     const sources = {
         coingecko: new CoinGeckoService(config.public.coinGeckoApiKey),
         alphavantage: new AlphaVantageService(config.public.alphaVantageApiKey),
-        coindesk: new CoinDeskService()
+        coindesk: new CoinDeskService(config.public.coinDeskApiKey)
     }
 
     // Функция для обновления и сохранения данных для одного источника
