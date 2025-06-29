@@ -10,6 +10,7 @@ export default defineEventHandler(async () => {
     const config = useRuntimeConfig()
     const coinId = 'bitcoin'
     const currency = 'usd'
+    const source = 'coingecko'
     const startYear = 2011
     const currentYear = new Date().getFullYear()
     let totalSavedPoints = 0
@@ -53,7 +54,8 @@ export default defineEventHandler(async () => {
                 timestamp: p[0],
                 price: p[1],
                 coinId,
-                currency
+                currency,
+                source,
             }))
 
             console.log(`Received ${pricesToSave.length} data points for ${year}. Saving to DB...`)

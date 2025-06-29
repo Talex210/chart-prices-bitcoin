@@ -3,6 +3,7 @@ import { getBitcoinPrices } from '~/server/database/dataBase'
 export default defineEventHandler(async (event) => {
     // Получаем параметры из запроса, если они есть
     const query = getQuery(event)
+    const source = query.source || 'coingecko'
 
     // Если переданы startTime и endTime - используем их
     if (query.startTime && query.endTime) {
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
             const endTime = Number(query.endTime)
 
             // Для кастомного периода используем более детальные данные
-            const prices = await getBitcoinPrices(startTime, endTime, 'day')
+            const prices = await getBitcoinPrices(startTime, endTime, 'day', source as string)
 
             return prices
         } catch (error) {
@@ -43,7 +44,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const prices = await getBitcoinPrices(startTime, endTime, period as string)
+        const prices = await getBitcoinPrices(startTime, endTime, period as string, source as string)
 
         return prices
     }

@@ -34,12 +34,7 @@ export interface BitcoinPrice {
     price: number;         // Текущая цена
     currency: string;      // 'usd', 'eur' и т.д.
     coinId: string;        // 'bitcoin'
+    source: string;        // источник данных
 }
 
-// Для запросов по периоду
-export interface PriceRangeParams {
-    startTime: number;
-    endTime: number;
-    coinId?: string;
-    currency?: string;
-}
+export type DataSource = 'coingecko' | 'alphavantage' | 'coindesk';

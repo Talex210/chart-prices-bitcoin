@@ -5,7 +5,9 @@ export default defineNuxtConfig({
   modules: ['@nuxt/eslint', '@nuxt/icon', '@nuxt/ui'],
   runtimeConfig: {
     public: {
-      coinGeckoApiKey: process.env.COINGECKO_API_KEY || ''
+      coinGeckoApiKey: process.env.COINGECKO_API_KEY || '',
+      alphaVantageApiKey: process.env.ALPHAVANTAGE_API_KEY || '',
+      coinDeskApiKey: process.env.COINDESK_API_KEY || '',
     },
     // Добавляем переменные для БД (только на сервере)
     dbUser: process.env.DB_USER,

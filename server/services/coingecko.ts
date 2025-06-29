@@ -24,6 +24,7 @@ export  class CoinGeckoService {
             price: data.current_price,
             currency: 'usd',
             coinId: data.id,
+            source: 'coingecko',
         }
     }
 

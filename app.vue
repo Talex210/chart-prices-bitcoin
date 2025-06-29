@@ -1,8 +1,35 @@
 <template>
     <div class="main-content">
-        <h1>
-            Bitcoin Price Chart
-        </h1>
+        <div class="header">
+            <div class="header-left"/>
+            <div class="header-center">
+                <h1>
+                    Bitcoin Price Chart
+                </h1>
+            </div>
+
+            <div class="header-right">
+                <div class="source-selector">
+                    <label>
+                        Choose source:
+                    </label>
+
+                    <select v-model="selectedSource">
+                        <option value="coingecko">
+                            CoinGecko
+                        </option>
+
+                        <option value="alphavantage">
+                            AlphaVantage
+                        </option>
+
+                        <option value="coindesk">
+                            CoinDesk
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
         <div class="period-buttons">
             <button
@@ -56,7 +83,7 @@
 
 <script setup lang="ts">
     import { ref, computed, watch } from "vue"
-    import type { BitcoinPrice } from "~/server/types/bitcoin"
+    import type { BitcoinPrice, DataSource } from "~/server/types/bitcoin"
     import LineChart from "~/components/LineChart.vue"
 
     type Period = 'day' | 'week' | 'month' | 'year' | 'custom'
@@ -113,14 +140,16 @@
         selectedPeriod.value = 'custom'
     }
 
+    const selectedSource = ref<DataSource>('coingecko')
+
     // Динамический URL для useFetch
     const apiUrl = computed(() => {
         if (selectedPeriod.value === 'custom') {
             const start = dateToTimestamp(startDate.value)
             const end = dateToTimestamp(endDate.value)
-            return `/api/pricesFromBD?startTime=${start}&endTime=${end}`
+            return `/api/pricesFromBD?startTime=${start}&endTime=${end}&source=${selectedSource.value}`
         }
-        return `/api/pricesFromBD?period=${selectedPeriod.value}`
+        return `/api/pricesFromBD?period=${selectedPeriod.value}&source=${selectedSource.value}`
     })
 
     // Запрашиваем данные
@@ -137,6 +166,41 @@
 </script>
 
 <style>
+.header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.header-center {
+    grid-column: 2;
+    text-align: center;
+}
+
+.header-right {
+    grid-column: 3;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.source-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.source-selector select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    background-color: #222;
+    color: white;
+    font-size: 14px;
+}
+
 .main-content {
     width: 100%;
     max-width: 95vw;
