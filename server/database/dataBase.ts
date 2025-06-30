@@ -10,7 +10,7 @@ function getPool() {
         // Конфигурация подключения
         pool = new Pool({
             user: config.dbUser || 'postgres',
-            host: config.dbHost || 'localhost',
+            host: config.dbHost || 'db',
             database: config.dbName || 'bitcoin_tracker',
             password: config.dbPassword || '89508699905',
             port: parseInt(config.dbPort || '5432'),

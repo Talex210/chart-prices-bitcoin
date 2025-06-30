@@ -5,13 +5,13 @@ import type { BitcoinPrice } from '~/server/types/bitcoin'
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default defineEventHandler(async () => {
-    console.log('Starting historical data backfill from 2011...')
+    console.log('Starting historical data backfill from 2020...')
 
     const config = useRuntimeConfig()
     const coinId = 'bitcoin'
     const currency = 'usd'
     const source = 'coingecko'
-    const startYear = 2011
+    const startYear = 2020
     const currentYear = new Date().getFullYear()
     let totalSavedPoints = 0
     const failedYears: number[] = []
